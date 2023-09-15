@@ -1,4 +1,4 @@
 package zangsu.selfmadeBlog.temp;
 
-public class tempChange {
+public class TempChange {
 }
