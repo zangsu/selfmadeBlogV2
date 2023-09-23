@@ -1,25 +1,27 @@
 package zangsu.selfmadeBlog.user.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import zangsu.selfmadeBlog.user.model.User;
+import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
+import zangsu.selfmadeBlog.user.repository.model.DBUser;
 
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class UserDAOTest {
+class DBUserDAOTest {
 
     @Autowired
     UserDAO userDAO;
 
-    User existingUser = new User("existing User", "existing userID", "existing userPW");
+    DBUser existingUser = new DBUser("existing User", "existing userID", "existing userPW");
     long existingId;
 
     @BeforeEach
@@ -31,14 +33,29 @@ class UserDAOTest {
     @Transactional
     public void saveTest() throws Exception{
         //given
-        User user = new User("new User", "userID", "userPW");
+        DBUser user = new DBUser("new User", "userID", "userPW");
 
         //when
         long savedId = userDAO.save(user);
 
         //then
-        User findUser = userDAO.find(savedId);
+        DBUser findUser = userDAO.find(savedId);
         checkUserSame(user, findUser);
+    }
+
+    @Test
+    @Transactional
+    public void sameIdSaveTest(){
+        //given
+        DBUser user1 = new DBUser("User1", "sameId", "PW1");
+        DBUser user2 = new DBUser("User2", "sameId", "PW2");
+
+        //when
+        userDAO.save(user1);
+        assertThatThrownBy(() -> userDAO.save(user2))
+                .isInstanceOf(DataIntegrityViolationException.class);
+
+        //that
     }
 
     @Test
@@ -47,7 +64,7 @@ class UserDAOTest {
         //given
 
         //when
-        User findUser = userDAO.find(existingId);
+        DBUser findUser = userDAO.find(existingId);
 
         //then
         checkUserSame(existingUser, findUser);
@@ -60,13 +77,11 @@ class UserDAOTest {
         userDAO.delete(existingId);
 
         //when
-        User findUser = userDAO.find(existingId);
-
-        //then
-        assertThat(findUser).isNull();
+        assertThatThrownBy(() -> userDAO.find(existingId))
+                .isInstanceOf(NoSuchUserException.class);
     }
 
-    private void checkUserSame(User u1, User u2) {
+    private void checkUserSame(DBUser u1, DBUser u2) {
         assertThat(u1.getUserName()).isEqualTo(u2.getUserName());
         assertThat(u1.getId()).isEqualTo(u2.getId());
         assertThat(u1.getPassword()).isEqualTo(u2.getPassword());

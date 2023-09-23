@@ -1,9 +1,8 @@
-package zangsu.selfmadeBlog.user.model;
+package zangsu.selfmadeBlog.user.repository.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Tables;
 
 import javax.persistence.*;
 
@@ -11,7 +10,7 @@ import javax.persistence.*;
 @Table(name = "USERS")
 @Getter @Setter
 @NoArgsConstructor
-public class User {
+public class DBUser {
 
     @Id
     @GeneratedValue
@@ -21,15 +20,25 @@ public class User {
     @Column(name = "NAME")
     private String userName;
 
-    @Column(name = "ID")
+    @Column(name = "ID", unique = true)
     private String id;
 
     @Column(name = "PASSWORD")
     private String password;
 
-    public User(String userName, String id, String password) {
+    public DBUser(String userName, String id, String password) {
         this.userName = userName;
         this.id = id;
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "DBUser{" +
+                "idx=" + idx +
+                ", userName='" + userName + '\'' +
+                ", id='" + id + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
