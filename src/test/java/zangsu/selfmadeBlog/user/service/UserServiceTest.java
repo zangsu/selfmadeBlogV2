@@ -23,7 +23,7 @@ class UserServiceTest {
     ServiceUser existingUser = new ServiceUser("eUserName", "eUserID", "eUserPW");
     long existUserIdx;
     @BeforeEach
-    public void init(){
+    public void init() throws Exception{
         existUserIdx = userService.saveUser(existingUser);
     }
 

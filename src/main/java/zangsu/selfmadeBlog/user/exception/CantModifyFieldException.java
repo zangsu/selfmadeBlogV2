@@ -1,6 +1,6 @@
 package zangsu.selfmadeBlog.user.exception;
 
-public class CantModifyFieldException extends IllegalStateException{
+public class CantModifyFieldException extends Exception{
     public CantModifyFieldException(String s) {
         super(s);
     }

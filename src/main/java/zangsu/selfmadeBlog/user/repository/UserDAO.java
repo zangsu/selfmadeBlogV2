@@ -1,5 +1,6 @@
 package zangsu.selfmadeBlog.user.repository;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import zangsu.selfmadeBlog.user.exception.CantModifyFieldException;
 import zangsu.selfmadeBlog.user.repository.model.DBUser;
@@ -19,8 +20,9 @@ public class UserDAO {
      * @param user 저장할 유저 엔티티
      * @return 저장된 유저의 idx 값
      */
-    public long save(DBUser user){
+    public long save(DBUser user) throws DataIntegrityViolationException {
         em.persist(user);
+        em.flush();
         return user.getIdx();
     }
 

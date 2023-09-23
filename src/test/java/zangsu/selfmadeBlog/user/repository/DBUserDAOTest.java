@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
@@ -39,6 +41,21 @@ class DBUserDAOTest {
         //then
         DBUser findUser = userDAO.find(savedId);
         checkUserSame(user, findUser);
+    }
+
+    @Test
+    @Transactional
+    public void sameIdSaveTest(){
+        //given
+        DBUser user1 = new DBUser("User1", "sameId", "PW1");
+        DBUser user2 = new DBUser("User2", "sameId", "PW2");
+
+        //when
+        userDAO.save(user1);
+        assertThatThrownBy(() -> userDAO.save(user2))
+                .isInstanceOf(DataIntegrityViolationException.class);
+
+        //that
     }
 
     @Test

@@ -20,7 +20,7 @@ public class DBUser {
     @Column(name = "NAME")
     private String userName;
 
-    @Column(name = "ID")
+    @Column(name = "ID", unique = true)
     private String id;
 
     @Column(name = "PASSWORD")
@@ -30,5 +30,15 @@ public class DBUser {
         this.userName = userName;
         this.id = id;
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "DBUser{" +
+                "idx=" + idx +
+                ", userName='" + userName + '\'' +
+                ", id='" + id + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
