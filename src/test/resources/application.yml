@@ -1,13 +1,13 @@
 spring:
   datasource:
-    url: jdbc:mysql://43.200.192.75:3306/selfmadeblogV2
+    url: jdbc:mysql://43.200.192.75:3306/selfmadeblogV2_test
     username: zangsu
     password: selfmadedb
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         #        show_sql: true
