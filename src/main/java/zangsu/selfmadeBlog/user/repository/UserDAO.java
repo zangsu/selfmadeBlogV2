@@ -2,6 +2,7 @@ package zangsu.selfmadeBlog.user.repository;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import zangsu.selfmadeBlog.user.exception.CantModifyFieldException;
 import zangsu.selfmadeBlog.user.repository.model.DBUser;
 import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
@@ -20,6 +21,7 @@ public class UserDAO {
      * @param user 저장할 유저 엔티티
      * @return 저장된 유저의 idx 값
      */
+    @Transactional
     public long save(DBUser user) throws DataIntegrityViolationException {
         em.persist(user);
         em.flush();
@@ -32,6 +34,7 @@ public class UserDAO {
      * @return user 조회된 유저 / idx의 유저가 없으면 @null
      * @throws NoSuchUserException idx 인덱스를 가지는 유저가 존재하지 않는 경우
      */
+    @Transactional
     public DBUser find(long idx) throws NoSuchUserException {
         DBUser findUser = em.find(DBUser.class, idx);
         if(findUser == null)
@@ -46,6 +49,7 @@ public class UserDAO {
      * @return id를 수정하려 하면 false, 그렇지 않은 경우 수정을 완료한 뒤 true
      * @throws NoSuchUserException idx 인덱스를 가지는 유저가 존재하지 않는 경우
      */
+    @Transactional
     public void modify(long idx, DBUser user) throws NoSuchUserException, CantModifyFieldException{
         DBUser originalUser = this.find(idx);
 
@@ -56,6 +60,7 @@ public class UserDAO {
         originalUser.setPassword(user.getPassword());
     }
 
+    @Transactional
     public void delete(long idx) throws NoSuchUserException{
         DBUser removeUser = em.find(DBUser.class, idx);
         em.remove(removeUser);
