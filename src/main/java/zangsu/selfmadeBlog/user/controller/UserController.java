@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import zangsu.selfmadeBlog.model.web.Warning;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 import zangsu.selfmadeBlog.user.controller.model.WebUserMapper;
+import zangsu.selfmadeBlog.user.exception.CantModifyFieldException;
 import zangsu.selfmadeBlog.user.exception.DuplicatedUserIdException;
 import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
 import zangsu.selfmadeBlog.user.service.UserService;
@@ -70,9 +71,22 @@ public class UserController {
     }
 
     //회원 수정 이후 회원 정보 페이지로
-    @PutMapping("{userIdx}")
-    public String modifyUser(Model model){
-        return userViewPath + "/user";
+    @PostMapping("{userIdx}")
+    public String modifyUser(@PathVariable long userIdx,
+                             @ModelAttribute WebUser modifiedUser,
+                             Model model){
+        try {
+            userService.modify(userIdx, WebUserMapper.getServiceUser(modifiedUser));
+            ServiceUser findUser = userService.findUser(userIdx);
+            model.addAttribute("user", findUser);
+            return userViewPath + "/user";
+        } catch (NoSuchUserException e) {
+            model.addAttribute("warnings", new Warning("해당 회원이 존재하지 않습니다"));
+            return userViewPath + "/home";
+        } catch (CantModifyFieldException e) {
+            model.addAttribute("warnings", new Warning("ID는 수정할 수 없습니다."));
+            return findUser(userIdx, model);
+        }
     }
 
     //회원 탈퇴 이후 탈퇴 성공 페이지로
