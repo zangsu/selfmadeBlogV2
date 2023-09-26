@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<H2>유저 상세 페이지</H2>
+</body>
+
+<script th:if="${warnings} != null" th:inline="javascript">
+    alert([[${warnings.message}]]);
+</script>
+
+<form th:object="${user}" method="post">
+    <div>
+        <label for="username">이름 : </label>
+        <input type="text" id="username" th:field="*{userName}">
+    </div>
+    <div>
+        <label for="id">ID : </label>
+        <input type="text" id="id" th:field="*{id}" readonly>
+    </div>
+    <div>
+        <label for="password">비밀번호 : </label>
+        <input type="password" id="password" th:field="*{password}">
+    </div>
+
+    <button type="submit">수정</button>
+    <form th:action="@{/user/{index}(index=${index})}" th:method="delete">
+        <button type="submit">삭제</button>
+    </form>
+
+</form>
+
+</html>
