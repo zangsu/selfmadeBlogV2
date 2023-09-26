@@ -27,5 +27,10 @@
     </div>
 
     <button type="submit">수정</button>
+    <form th:action="@{/user/{index}(index=${index})}" th:method="delete">
+        <button type="submit">삭제</button>
+    </form>
+
 </form>
+
 </html>

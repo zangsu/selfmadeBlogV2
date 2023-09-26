@@ -61,13 +61,18 @@ public class UserController {
     @GetMapping("{userIdx}")
     public String findUser(@PathVariable long userIdx, Model model){
         try {
-            ServiceUser findUser = userService.findUser(userIdx);
-            model.addAttribute("user", findUser);
-            return userViewPath + "/user";
+            return userInfo(userIdx, model);
         } catch (NoSuchUserException e) {
             model.addAttribute("warnings", new Warning("해당 회원이 존재하지 않습니다"));
             return userViewPath + "/home";
         }
+    }
+
+    private String userInfo(long userIdx, Model model) throws NoSuchUserException {
+        ServiceUser findUser = userService.findUser(userIdx);
+        model.addAttribute("user", findUser);
+        model.addAttribute("index", userIdx);
+        return userViewPath + "/user";
     }
 
     //회원 수정 이후 회원 정보 페이지로
@@ -77,9 +82,7 @@ public class UserController {
                              Model model){
         try {
             userService.modify(userIdx, WebUserMapper.getServiceUser(modifiedUser));
-            ServiceUser findUser = userService.findUser(userIdx);
-            model.addAttribute("user", findUser);
-            return userViewPath + "/user";
+            return userInfo(userIdx, model);
         } catch (NoSuchUserException e) {
             model.addAttribute("warnings", new Warning("해당 회원이 존재하지 않습니다"));
             return userViewPath + "/home";
@@ -91,8 +94,13 @@ public class UserController {
 
     //회원 탈퇴 이후 탈퇴 성공 페이지로
     @DeleteMapping("{userIdx}")
-    public String deleteUser(Model model) {
-        return userViewPath + "/delete";
+    public String deleteUser(@PathVariable int userIdx, Model model) {
+        try {
+            userService.delete(userIdx);
+            return userViewPath + "/delete";
+        } catch (NoSuchUserException e) {
+            model.addAttribute("warnings", new Warning("해당 회원이 존재하지 않습니다"));
+            return userViewPath + "/home";
+        }
     }
-
 }
