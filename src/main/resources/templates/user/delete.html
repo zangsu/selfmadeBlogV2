@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{template :: insert(~{::title}, ~{::block})}">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
 </head>
 <body>
-<h2>삭제 성공</h2>
+    <block>
+        <h2>삭제 성공</h2>
 
-회원이 성공적으로 삭제되었습니다.
+        회원이 성공적으로 삭제되었습니다.
+    </block>
 </body>
 </html>

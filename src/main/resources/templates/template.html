@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="insert(title,main)">
+<head>
+    <meta charset="UTF-8">
+    <title th:replace="${title}">Title</title>
+</head>
+<body>
+
+<script th:if="${warnings} != null" th:inline="javascript">
+    alert([[${warnings.message}]]);
+</script>
+
+<div th:replace="${main}"></div>
+
+</body>
+</html>

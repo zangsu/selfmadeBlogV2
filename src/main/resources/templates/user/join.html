@@ -1,33 +1,36 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{template :: insert(~{::title}, ~{::block})}">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<H2>회원가입 페이지</H2>
+<block>
+    <H2>회원가입 페이지</H2>
 
-<script th:if="${warnings} != null" th:inline="javascript">
-    alert([[${warnings.message}]]);
-</script>
+    <script th:if="${warnings} != null" th:inline="javascript">
+        alert([[${warnings.message}]]);
+    </script>
 
-<form action="user.html" th:object="${userClass}" th:action method="post">
-    <div>
-        <label for="userName">이름</label>
-        <input type="text" id="userName" th:field="*{userName}" placeholder="이름을 입력하세요">
-    </div>
-    <div>
-        <label for="id">ID</label>
-        <input type="text" id="id" th:field="*{id}" placeholder="ID를 입력하세요">
-    </div>
-    <div>
-        <label for="password">비밀 번호</label>
-        <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요">
-    </div>
+    <form action="user.html" th:object="${userClass}" th:action="@{/user/join}" method="post">
+        <div>
+            <label for="userName">이름</label>
+            <input type="text" id="userName" th:field="*{userName}" placeholder="이름을 입력하세요">
+        </div>
+        <div>
+            <label for="id">ID</label>
+            <input type="text" id="id" th:field="*{id}" placeholder="ID를 입력하세요">
+        </div>
+        <div>
+            <label for="password">비밀 번호</label>
+            <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요">
+        </div>
 
-    <button type="submit"> 회원가입 </button>
+        <button type="submit"> 회원가입 </button>
 
-</form>
+    </form>
+</block>
 
 </body>
 </html>
