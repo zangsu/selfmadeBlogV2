@@ -6,6 +6,9 @@ import zangsu.selfmadeBlog.user.exception.DuplicatedUserIdException;
 import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
 
 public class WarningFactory {
+
+    public static String WarningKey = "warnings";
+
     public static Warning duplicatedUserIdWarnings = new Warning("중복된 회원 ID 입니다.");
     public static Warning noUserFindWarnings = new Warning("해당 회원이 존재하지 않습니다");
     public static Warning cantModifyWarnings = new Warning("ID는 수정할 수 없습니다.");
@@ -23,10 +26,12 @@ public class WarningFactory {
         else if(exceptionClass.equals(CantModifyFieldException.class)) {
             warning = cantModifyWarnings;
         }
+
+        System.out.println("[message] " + warning.getMessage());
         if(warning ==null) {
             return;
         }
 
-        model.addAttribute("warnings", warning);
+        model.addAttribute(WarningKey, warning);
     }
 }

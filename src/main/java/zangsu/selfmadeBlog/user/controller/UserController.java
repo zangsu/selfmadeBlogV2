@@ -15,6 +15,8 @@ import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
 import zangsu.selfmadeBlog.user.service.UserService;
 import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -70,7 +72,7 @@ public class UserController {
 
     private String userInfo(long userIdx, Model model) throws NoSuchUserException {
         ServiceUser findUser = userService.findUser(userIdx);
-        model.addAttribute("user", findUser);
+        model.addAttribute("user", WebUserMapper.getWebUser(findUser));
         model.addAttribute("index", userIdx);
         return userViewPath + "/user";
     }
