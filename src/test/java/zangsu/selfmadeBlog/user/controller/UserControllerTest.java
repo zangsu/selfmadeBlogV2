@@ -33,9 +33,9 @@ class UserControllerTest {
 
     final String joinUrl = "/user/join";
 
-
     long extIdx;
-    final static WebUser extUser = new WebUser("extUser", "extUserID", "extUserPassword");
+    final static WebUser extUser =
+            new WebUser("extUser", "extUserID", "extUserPassword");
 
     @Autowired
     MockMvc mockMvc;

@@ -21,14 +21,14 @@ public class DBUser {
     private String userName;
 
     @Column(name = "ID", unique = true)
-    private String id;
+    private String userId;
 
     @Column(name = "PASSWORD")
     private String password;
 
-    public DBUser(String userName, String id, String password) {
+    public DBUser(String userName, String userId, String password) {
         this.userName = userName;
-        this.id = id;
+        this.userId = userId;
         this.password = password;
     }
 
@@ -37,7 +37,7 @@ public class DBUser {
         return "DBUser{" +
                 "idx=" + idx +
                 ", userName='" + userName + '\'' +
-                ", id='" + id + '\'' +
+                ", userId='" + userId + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }
