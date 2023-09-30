@@ -19,12 +19,11 @@ public class UserService {
     UserDAO userDAO;
 
     public Long saveUser(ServiceUser user) throws DuplicatedUserIdException {
-        try{
-            DBUser dbUser = userDAO.saveAndFlush(ServiceUserMapper.getDBUser(user));
-            return dbUser.getIdx();
-        } catch (DataIntegrityViolationException e){
-            throw new DuplicatedUserIdException(e);
-        }
+        if(userDAO.existsByUserId(user.getId()))
+            throw new DuplicatedUserIdException(new DataIntegrityViolationException(""));
+
+        DBUser dbUser = userDAO.save(ServiceUserMapper.getDBUser(user));
+        return dbUser.getIdx();
     }
 
     public ServiceUser findUser(long idx) throws NoSuchUserException {

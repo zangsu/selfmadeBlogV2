@@ -6,5 +6,7 @@ import zangsu.selfmadeBlog.user.repository.model.DBUser;
 import java.util.Optional;
 
 public interface UserDAO extends JpaRepository<DBUser, Long> {
-    public Optional<DBUser> findByUserId(String userId);
+    //public Optional<DBUser> findByUserId(String userId);
+
+    public boolean existsByUserId(String userId);
 }
