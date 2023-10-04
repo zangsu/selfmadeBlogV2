@@ -10,7 +10,7 @@ public class ServiceUserMapper {
     }
 
     public static ServiceUser getServiceUser(DBUser dbUser){
-        ServiceUser user = new ServiceUser(dbUser.getUserName(), dbUser.getId(), dbUser.getPassword());
+        ServiceUser user = new ServiceUser(dbUser.getUserName(), dbUser.getUserId(), dbUser.getPassword());
         return user;
     }
 }

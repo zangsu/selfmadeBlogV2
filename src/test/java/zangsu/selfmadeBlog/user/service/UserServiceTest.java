@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import zangsu.selfmadeBlog.user.exception.CantModifyFieldException;
+import zangsu.selfmadeBlog.user.exception.DuplicatedUserIdException;
 import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
 import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 
@@ -65,6 +66,17 @@ class UserServiceTest {
         isSameUser(user, findUser);
     }
 
+    @Test
+    @Transactional
+    public void duplicateIdTest() throws Exception{
+        //given
+        ServiceUser user = new ServiceUser("newName", existingUser.getId(), "newPw");
+        //when
+
+        //then
+        assertThatThrownBy(() -> userService.saveUser(user))
+                .isInstanceOf(DuplicatedUserIdException.class);
+    }
     @Test
     @Transactional
     public void modifyTest() throws Exception{
