@@ -1,4 +1,6 @@
 spring:
+  messages:
+    basename: messages, errors
   datasource:
     url: jdbc:mysql://43.200.192.75:3306/selfmadeblogV2
     username: zangsu

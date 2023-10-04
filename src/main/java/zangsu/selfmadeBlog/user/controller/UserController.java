@@ -3,6 +3,8 @@ package zangsu.selfmadeBlog.user.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 import zangsu.selfmadeBlog.user.controller.model.WebUserMapper;
@@ -33,14 +35,18 @@ public class UserController {
 
     //회원 가입 폼으로 이동
     @GetMapping("/join")
-    public String joinForm(Model model) {
-        model.addAttribute("userClass", new WebUser());
+    public String joinForm(@ModelAttribute("userForm") WebUser webUser, Model model) {
+        //model.addAttribute("userClass", new WebUser());
         return userViewPath + "/join";
     }
 
     //회원 가입 후 회원 정보 페이지로
     @PostMapping("/join")
-    public String saveUser(@ModelAttribute WebUser user, Model model) {
+    public String saveUser(@Validated @ModelAttribute("userForm") WebUser user, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()){
+            return userViewPath + "/join";
+        }
+
         try {
             long savedId = userService.saveUser(WebUserMapper.getServiceUser(user));
             return "redirect:/user/" + savedId;
