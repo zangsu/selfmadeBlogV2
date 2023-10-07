@@ -13,7 +13,7 @@ public class WebUser {
     private String userName;
 
     @NotBlank
-    private String id;
+    private String userId;
 
     @NotBlank
     private String password;

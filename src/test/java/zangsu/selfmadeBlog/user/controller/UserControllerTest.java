@@ -1,8 +1,6 @@
 package zangsu.selfmadeBlog.user.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +45,7 @@ class UserControllerTest {
     public void existingUser() throws Exception {
         MvcResult result = mockMvc.perform(post(joinUrl)
                         .param("userName", extUser.getUserName())
-                        .param("id", extUser.getId())
+                        .param("id", extUser.getUserId())
                         .param("password", extUser.getPassword())
                 )
                 .andReturn();
@@ -68,7 +66,7 @@ class UserControllerTest {
         //given
         MvcResult result = mockMvc.perform(post(joinUrl)
                         .param("userName", user.getUserName())
-                        .param("id", user.getId())
+                        .param("id", user.getUserId())
                         .param("password", user.getPassword()))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
@@ -87,7 +85,7 @@ class UserControllerTest {
 
         MvcResult result = mockMvc.perform(post(joinUrl)
                         .param("userName", extUser.getUserName())
-                        .param("id", extUser.getId())
+                        .param("id", extUser.getUserId())
                         .param("password", extUser.getPassword()))
                 .andReturn();
 
@@ -117,7 +115,7 @@ class UserControllerTest {
         assertThat(modelMap.containsKey("user")).isTrue();
         WebUser user = (WebUser) modelMap.get("user");
         assertThat(user.getUserName()).isEqualTo(extUser.getUserName());
-        assertThat(user.getId()).isEqualTo(extUser.getId());
+        assertThat(user.getUserId()).isEqualTo(extUser.getUserId());
         assertThat(user.getPassword()).isEqualTo(extUser.getPassword());
     }
 
@@ -144,7 +142,7 @@ class UserControllerTest {
         //given
         MvcResult result = mockMvc.perform(post("/user/" + extIdx)
                         .param("userName", "newUserName")
-                        .param("id", extUser.getId())
+                        .param("id", extUser.getUserId())
                         .param("password", "newPassword"))
                 .andExpect(status().isOk())
                 .andReturn();
