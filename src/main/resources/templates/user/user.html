@@ -8,7 +8,7 @@
 <body>
     <block>
         <H2>유저 상세 페이지</H2>
-        <form th:action="@{/user/{userIdx}(userIdx=${index})}" th:object="${user}" th:method="post">
+        <form th:action="@{/user/{userIdx}(userIdx=${index})}" th:object="${webUser}" th:method="post">
             <div>
                 <label for="username">이름 : </label>
                 <input type="text" id="username" th:field="*{userName}">

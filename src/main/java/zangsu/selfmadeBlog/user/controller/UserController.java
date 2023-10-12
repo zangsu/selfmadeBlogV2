@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import zangsu.selfmadeBlog.model.web.CheckIdDTO;
@@ -26,20 +27,22 @@ import static zangsu.selfmadeBlog.model.web.WarningFactory.addWarnings;
 public class UserController {
 
     final static String userViewPath = "user";
+    @Autowired
+    private UserService userService;
+    //@Autowired
+    private WebUserValidator validator = new WebUserValidator();
+
+    @InitBinder
+    public void initValidatior(DataBinder dataBinder){dataBinder.addValidators(validator);}
 
     @ModelAttribute("readonly")
     public boolean readOnly(){
         return false;
     }
-    @ModelAttribute("userForm")
+    @ModelAttribute("webUser")
     public WebUser addUserForm(){
         return new WebUser();
     }
-
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private WebUserValidator validator;
 
     //유저 홈으로 이동
     @GetMapping
@@ -49,7 +52,7 @@ public class UserController {
 
     //회원 가입 폼으로 이동
     @GetMapping("/join")
-    public String joinForm(@ModelAttribute("userForm") WebUser webUser, Model model) {
+    public String joinForm(@ModelAttribute WebUser webUser, Model model) {
         //model.addAttribute("userClass", new WebUser());
 
         model.addAttribute("readonly", false);
@@ -58,8 +61,8 @@ public class UserController {
 
     //회원 가입 후 회원 정보 페이지로
     @PostMapping("/join")
-    public String saveUser(@Validated @ModelAttribute("userForm") WebUser user, BindingResult bindingResult, Model model) {
-        validator.validate(user, bindingResult);
+    public String saveUser(@Validated @ModelAttribute WebUser user, BindingResult bindingResult, Model model) {
+
         if(bindingResult.hasErrors()){
             return userViewPath + "/join";
         }

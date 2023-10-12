@@ -3,6 +3,7 @@ package zangsu.selfmadeBlog.user.controller.model;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Getter @Setter
 @NoArgsConstructor
