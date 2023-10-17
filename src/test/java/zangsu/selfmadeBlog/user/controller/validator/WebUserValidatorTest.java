@@ -3,10 +3,7 @@ package zangsu.selfmadeBlog.user.controller.validator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.BindingResultUtils;
-import org.springframework.validation.Validator;
+import org.springframework.validation.*;
 
 import java.util.regex.Pattern;
 
@@ -21,9 +18,16 @@ class WebUserValidatorTest {
         //given
         BindingResult bindingResult = Mockito.mock(BindingResult.class);
 
+        System.out.println("prev");
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            System.out.println(fieldError.getField() + ", " + fieldError.getRejectedValue());
+        }
         //when
         validator.validateId("123User", bindingResult);
-
+        System.out.println("after");
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            System.out.println(fieldError.getField() + ", " + fieldError.getRejectedValue());
+        }
         //then
         assertThat(Pattern.matches(validator.USER_ID_PATTERN, "123User"))
                 .isFalse();

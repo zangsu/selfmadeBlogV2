@@ -21,6 +21,7 @@ public class WebUserValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
+        System.out.println("validate");
         WebUser webUser = (WebUser) target;
         BindingResult bindingResult = (BindingResult) errors;
 
