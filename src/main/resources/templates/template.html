@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="insert(title,main)">
-<head>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="insert(head,title,main)">
+<head th:replace="${head}">
     <meta charset="UTF-8">
     <title th:replace="${title}">Title</title>
 </head>

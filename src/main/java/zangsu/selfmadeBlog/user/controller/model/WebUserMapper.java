@@ -6,7 +6,7 @@ public class WebUserMapper {
     public static ServiceUser getServiceUser(WebUser webUser){
         return new ServiceUser(
                 webUser.getUserName(),
-                webUser.getId(),
+                webUser.getUserId(),
                 webUser.getPassword());
     }
 

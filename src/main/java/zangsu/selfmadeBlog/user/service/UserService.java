@@ -44,10 +44,16 @@ public class UserService {
         userDAO.delete(dbUser);
     }
 
+    public boolean checkId(String userId){
+        return userDAO.existsByUserId(userId);
+    }
+
     private DBUser findDbUser(long idx) throws NoSuchUserException {
         Optional<DBUser> dbUser = userDAO.findById(idx);
         if(dbUser.isEmpty())
             throw new NoSuchUserException("");
         return dbUser.get();
     }
+
+
 }

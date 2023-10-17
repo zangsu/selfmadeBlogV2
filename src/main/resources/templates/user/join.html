@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{template :: insert(~{::title}, ~{::block})}">
+      th:replace="~{template :: insert(~{::head}, ~{::title}, ~{::block})}">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <!--script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script th:inline="javascript">
+        function checkId(){
+            const data=$("#userId").val();
+            const CheckIdDTO = {
+                userId:data
+            };
+            $.ajax({
+                url: "/user/checkId",
+                data: CheckIdDTO,
+                type: 'POST',
+            }).done(function (data){
+                console.log("success");
+                console.log(data);
+
+                $("#userId").prop("readonly", !data);
+                $("#idError").replaceWith(data);
+            });
+        }
+    </script-->
 </head>
 <body>
 <block>
@@ -13,18 +33,27 @@
         alert([[${warnings.message}]]);
     </script>
 
-    <form action="user.html" th:object="${userClass}" th:action="@{/user/join}" method="post">
+
+    <form action="user.html" th:object="${webUser}" th:action="@{/user/join}" method="post">
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p th:each="errors:${#fields.globalErrors()}" th:text="${errors}"></p>
+        </div>
         <div>
             <label for="userName">이름</label>
             <input type="text" id="userName" th:field="*{userName}" placeholder="이름을 입력하세요">
+            <p th:errors="*{userName}">이름 오류</p>
         </div>
         <div>
-            <label for="id">ID</label>
-            <input type="text" id="id" th:field="*{id}" placeholder="ID를 입력하세요">
+            <label for="userId">ID</label>
+            <input type="text" id="userId" th:field="*{userId}"
+                   placeholder="ID를 입력하세요">
+            <p id="idError" th:errors="*{userId}">ID 오류</p>
         </div>
+        <!--button type="button" onclick="checkId()">중복 체크</button-->
         <div>
             <label for="password">비밀 번호</label>
             <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요">
+            <p th:errors="*{password}">비밀번호 오류</p>
         </div>
 
         <button type="submit"> 회원가입 </button>
