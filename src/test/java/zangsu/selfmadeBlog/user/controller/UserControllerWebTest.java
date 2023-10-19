@@ -32,6 +32,31 @@ class UserControllerWebTest {
     WebUserValidator validator = new WebUserValidator();
 
     @Test
+    public void 빈값은_허용하지_않음() throws Exception{
+        //given
+        WebUser blankUser = new WebUser("", "", "");
+        makeRequest(blankUser)
+                .andExpect(model().attributeHasFieldErrorCode("webUser", "userId", "NotBlank"))
+                .andExpect(model().attributeHasFieldErrorCode("webUser", "userName", "NotBlank"))
+                .andExpect(model().attributeHasFieldErrorCode("webUser", "password", "NotBlank"));
+        //when
+
+        //then
+    }
+    @Test
+    public void 공백은_허용하지_않음() throws Exception{
+        //given
+        WebUser blankUser = new WebUser(" ", " ", " ");
+        makeRequest(blankUser)
+                .andExpect(model().attributeHasFieldErrorCode("webUser", "userId", "NotBlank"))
+                .andExpect(model().attributeHasFieldErrorCode("webUser", "userName", "NotBlank"))
+                .andExpect(model().attributeHasFieldErrorCode("webUser", "password", "NotBlank"));
+        //when
+
+        //then
+    }
+
+    @Test
     public void id는_숫자로_시작하면_안됨() throws Exception{
         WebUser user = new WebUser("", "123User", "");
         makeRequest(user)
