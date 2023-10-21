@@ -82,23 +82,11 @@ public class UserController {
         try {
             return userInfo(userIdx, model);
         } catch (NoSuchUserException e) {
+            //나중에 에러 페이지를 하나 구현하기
             addWarnings(model, e);
             return userViewPath + "/home";
         }
     }
-
-    /*//TODO
-    @PostMapping("checkId")
-    public String checkid(CheckIdDTO checkIdDTO, Model model){
-
-        boolean result = userService.checkId(checkIdDTO.getUserId());
-        log.info("{}, {}", checkIdDTO.getUserId(), result);
-        model.addAttribute("readonly", result);
-        if(result){
-
-        }
-        return userViewPath + "/join :: " + result;
-    }*/
 
     private String userInfo(long userIdx, Model model) throws NoSuchUserException {
 
