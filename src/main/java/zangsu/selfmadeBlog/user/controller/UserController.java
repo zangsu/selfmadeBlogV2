@@ -68,15 +68,10 @@ public class UserController {
         }
 
         try {
-            if(userService.checkId(user.getUserId())){
-                bindingResult.rejectValue("userId", "Duplicate", "");
-                return userViewPath + "/join";
-            }
             long savedId = userService.saveUser(WebUserMapper.getServiceUser(user));
             return "redirect:/user/" + savedId;
         } catch (DuplicatedUserIdException e) {
-            model.addAttribute("userClass", new WebUser());
-            addWarnings(model, e);
+            bindingResult.rejectValue("userId", "Duplicate", "");
             return userViewPath + "/join";
         }
     }
@@ -108,7 +103,7 @@ public class UserController {
     private String userInfo(long userIdx, Model model) throws NoSuchUserException {
 
         ServiceUser findUser = userService.findUser(userIdx);
-        model.addAttribute("user", WebUserMapper.getWebUser(findUser));
+        model.addAttribute("webUser", WebUserMapper.getWebUser(findUser));
         model.addAttribute("index", userIdx);
         return userViewPath + "/user";
     }
