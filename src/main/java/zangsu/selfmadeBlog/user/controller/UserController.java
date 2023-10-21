@@ -69,7 +69,7 @@ public class UserController {
 
         try {
             if(userService.checkId(user.getUserId())){
-                bindingResult.rejectValue("userId", "Duplicate");
+                bindingResult.rejectValue("userId", "Duplicate", "");
                 return userViewPath + "/join";
             }
             long savedId = userService.saveUser(WebUserMapper.getServiceUser(user));
