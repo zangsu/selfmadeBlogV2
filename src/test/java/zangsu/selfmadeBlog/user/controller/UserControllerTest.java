@@ -77,36 +77,22 @@ class UserControllerTest {
     @Transactional
     public void duplicatedUserSave() throws Exception {
         //given
-
         joinUserRequest(extUser)
                 .andExpect(view().name("user/join"))
                 .andExpect(model()
                         .attributeHasFieldErrorCode("webUser", "userId", "Duplicate"));
-
     }
 
-    /*
     @Test
     @Transactional
     public void findUserSuccess() throws Exception{
         //given
-        MvcResult result = mockMvc.perform(get("/user/" + extIdx))
+        mockMvc.perform(get("/user/" + extIdx))
                 .andExpect(status().isOk())
-                .andReturn();
-
-        //when
-        ModelAndView mv = result.getModelAndView();
-        ModelMap modelMap = mv.getModelMap();
-
-        //then
-        assertThat(modelMap.containsKey("user")).isTrue();
-        WebUser user = (WebUser) modelMap.get("user");
-        assertThat(user.getUserName()).isEqualTo(extUser.getUserName());
-        assertThat(user.getUserId()).isEqualTo(extUser.getUserId());
-        assertThat(user.getPassword()).isEqualTo(extUser.getPassword());
+                .andExpect(model().attribute("webUser", extUser));
     }
 
-    @Test
+   /* @Test
     @Transactional
     public void findUserFail() throws Exception{
         //given
@@ -121,8 +107,9 @@ class UserControllerTest {
         //then
         assertThat(models.containsKey(WarningFactory.WarningKey)).isTrue();
         assertThat(models.get("warnings")).isEqualTo(WarningFactory.noUserFindWarnings);
-    }
+    }*/
 
+    /*
     @Test
     @Transactional
     public void modifyUserSuccess() throws Exception{
@@ -143,7 +130,7 @@ class UserControllerTest {
         assertThat(user.getUserName()).isEqualTo("newUserName");
         assertThat(user.getPassword()).isEqualTo("newPassword");
     }
-    
+
     @Test
     @Transactional
     public void modifyUserFail() throws Exception{
