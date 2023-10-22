@@ -11,6 +11,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -29,11 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerTest {
 
+    public static final String WEB_USER_KEY = "webUser";
     final String joinUrl = "/user/join";
 
     long extIdx;
     final static WebUser extUser =
-            new WebUser("extUser", "extUserID", "extUserPassword");
+            new WebUser("extUser", "extUserID", "extUserPassword1!");
 
     @Autowired
     MockMvc mockMvc;
@@ -43,11 +46,7 @@ class UserControllerTest {
 
     @BeforeEach
     public void existingUser() throws Exception {
-        MvcResult result = mockMvc.perform(post(joinUrl)
-                        .param("userName", extUser.getUserName())
-                        .param("id", extUser.getUserId())
-                        .param("password", extUser.getPassword())
-                )
+        MvcResult result = joinUserRequest(extUser)
                 .andReturn();
 
         extIdx = Integer.parseInt(result.getResponse()
@@ -61,13 +60,10 @@ class UserControllerTest {
     @Transactional
     public void saveUser() throws Exception {
 
-        WebUser user = new WebUser("new User", "userID", "userPW");
+        WebUser user = new WebUser("newUser", "userID", "userPassword1!");
 
         //given
-        MvcResult result = mockMvc.perform(post(joinUrl)
-                        .param("userName", user.getUserName())
-                        .param("id", user.getUserId())
-                        .param("password", user.getPassword()))
+        MvcResult result = joinUserRequest(user)
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
@@ -82,44 +78,22 @@ class UserControllerTest {
     @Transactional
     public void duplicatedUserSave() throws Exception {
         //given
-
-        MvcResult result = mockMvc.perform(post(joinUrl)
-                        .param("userName", extUser.getUserName())
-                        .param("id", extUser.getUserId())
-                        .param("password", extUser.getPassword()))
-                .andReturn();
-
-        //when
-        ModelAndView mv = result.getModelAndView();
-
-        //then
-        assertThat(mv.getViewName()).isEqualTo("user/join");
-        Map<String, Object> modelAttributes = mv.getModel();
-        assertThat(modelAttributes.get(WarningFactory.WarningKey))
-                .isEqualTo(WarningFactory.duplicatedUserIdWarnings);
+        joinUserRequest(extUser)
+                .andExpect(view().name("user/join"))
+                .andExpect(model()
+                        .attributeHasFieldErrorCode(WEB_USER_KEY, "userId", "Duplicate"));
     }
 
     @Test
     @Transactional
     public void findUserSuccess() throws Exception{
         //given
-        MvcResult result = mockMvc.perform(get("/user/" + extIdx))
+        mockMvc.perform(get("/user/" + extIdx))
                 .andExpect(status().isOk())
-                .andReturn();
-
-        //when
-        ModelAndView mv = result.getModelAndView();
-        ModelMap modelMap = mv.getModelMap();
-
-        //then
-        assertThat(modelMap.containsKey("user")).isTrue();
-        WebUser user = (WebUser) modelMap.get("user");
-        assertThat(user.getUserName()).isEqualTo(extUser.getUserName());
-        assertThat(user.getUserId()).isEqualTo(extUser.getUserId());
-        assertThat(user.getPassword()).isEqualTo(extUser.getPassword());
+                .andExpect(model().attribute(WEB_USER_KEY, extUser));
     }
 
-    @Test
+   @Test
     @Transactional
     public void findUserFail() throws Exception{
         //given
@@ -142,7 +116,7 @@ class UserControllerTest {
         //given
         MvcResult result = mockMvc.perform(post("/user/" + extIdx)
                         .param("userName", "newUserName")
-                        .param("id", extUser.getUserId())
+                        .param("userId", extUser.getUserId())
                         .param("password", "newPassword"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -151,12 +125,12 @@ class UserControllerTest {
         Map<String, Object> models = result.getModelAndView().getModel();
 
         //then
-        assertThat(models.containsKey("user")).isTrue();
-        WebUser user = (WebUser) models.get("user");
+        assertThat(models.containsKey(WEB_USER_KEY)).isTrue();
+        WebUser user = (WebUser) models.get(WEB_USER_KEY);
         assertThat(user.getUserName()).isEqualTo("newUserName");
         assertThat(user.getPassword()).isEqualTo("newPassword");
     }
-    
+
     @Test
     @Transactional
     public void modifyUserFail() throws Exception{
@@ -186,5 +160,14 @@ class UserControllerTest {
         //when
 
         //then
+    }
+
+
+    private ResultActions joinUserRequest(WebUser user) throws Exception {
+        return mockMvc.perform(post(joinUrl)
+                    .param("userName", user.getUserName())
+                    .param("userId", user.getUserId())
+                    .param("password", user.getPassword()))
+                .andDo(print());
     }
 }

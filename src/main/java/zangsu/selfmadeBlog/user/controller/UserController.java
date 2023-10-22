@@ -1,7 +1,6 @@
 package zangsu.selfmadeBlog.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Check;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,7 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import zangsu.selfmadeBlog.model.web.CheckIdDTO;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 import zangsu.selfmadeBlog.user.controller.model.WebUserMapper;
 import zangsu.selfmadeBlog.user.controller.validator.WebUserValidator;
@@ -32,8 +30,10 @@ public class UserController {
     //@Autowired
     private WebUserValidator validator = new WebUserValidator();
 
-    @InitBinder
-    public void initValidatior(DataBinder dataBinder){dataBinder.addValidators(validator);}
+    @InitBinder("webUser")
+    public void initValidator(DataBinder dataBinder){
+        dataBinder.addValidators(validator);
+    }
 
     @ModelAttribute("readonly")
     public boolean readOnly(){
@@ -68,15 +68,10 @@ public class UserController {
         }
 
         try {
-            if(userService.checkId(user.getUserId())){
-                bindingResult.rejectValue("userId", "Duplicate");
-                return userViewPath + "/join";
-            }
             long savedId = userService.saveUser(WebUserMapper.getServiceUser(user));
             return "redirect:/user/" + savedId;
         } catch (DuplicatedUserIdException e) {
-            model.addAttribute("userClass", new WebUser());
-            addWarnings(model, e);
+            bindingResult.rejectValue("userId", "Duplicate", "");
             return userViewPath + "/join";
         }
     }
@@ -87,28 +82,16 @@ public class UserController {
         try {
             return userInfo(userIdx, model);
         } catch (NoSuchUserException e) {
+            //나중에 에러 페이지를 하나 구현하기
             addWarnings(model, e);
             return userViewPath + "/home";
         }
     }
 
-    /*//TODO
-    @PostMapping("checkId")
-    public String checkid(CheckIdDTO checkIdDTO, Model model){
-
-        boolean result = userService.checkId(checkIdDTO.getUserId());
-        log.info("{}, {}", checkIdDTO.getUserId(), result);
-        model.addAttribute("readonly", result);
-        if(result){
-
-        }
-        return userViewPath + "/join :: " + result;
-    }*/
-
     private String userInfo(long userIdx, Model model) throws NoSuchUserException {
 
         ServiceUser findUser = userService.findUser(userIdx);
-        model.addAttribute("user", WebUserMapper.getWebUser(findUser));
+        model.addAttribute("webUser", WebUserMapper.getWebUser(findUser));
         model.addAttribute("index", userIdx);
         return userViewPath + "/user";
     }
