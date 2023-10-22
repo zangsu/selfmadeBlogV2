@@ -1,7 +1,6 @@
 package zangsu.selfmadeBlog.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Check;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,7 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import zangsu.selfmadeBlog.model.web.CheckIdDTO;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 import zangsu.selfmadeBlog.user.controller.model.WebUserMapper;
 import zangsu.selfmadeBlog.user.controller.validator.WebUserValidator;
@@ -32,8 +30,10 @@ public class UserController {
     //@Autowired
     private WebUserValidator validator = new WebUserValidator();
 
-    @InitBinder
-    public void initValidatior(DataBinder dataBinder){dataBinder.addValidators(validator);}
+    @InitBinder("webUser")
+    public void initValidator(DataBinder dataBinder){
+        dataBinder.addValidators(validator);
+    }
 
     @ModelAttribute("readonly")
     public boolean readOnly(){

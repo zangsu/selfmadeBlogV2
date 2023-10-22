@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerTest {
 
+    public static final String WEB_USER_KEY = "webUser";
     final String joinUrl = "/user/join";
 
     long extIdx;
@@ -80,7 +81,7 @@ class UserControllerTest {
         joinUserRequest(extUser)
                 .andExpect(view().name("user/join"))
                 .andExpect(model()
-                        .attributeHasFieldErrorCode("webUser", "userId", "Duplicate"));
+                        .attributeHasFieldErrorCode(WEB_USER_KEY, "userId", "Duplicate"));
     }
 
     @Test
@@ -89,10 +90,10 @@ class UserControllerTest {
         //given
         mockMvc.perform(get("/user/" + extIdx))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("webUser", extUser));
+                .andExpect(model().attribute(WEB_USER_KEY, extUser));
     }
 
-   /* @Test
+   @Test
     @Transactional
     public void findUserFail() throws Exception{
         //given
@@ -107,16 +108,15 @@ class UserControllerTest {
         //then
         assertThat(models.containsKey(WarningFactory.WarningKey)).isTrue();
         assertThat(models.get("warnings")).isEqualTo(WarningFactory.noUserFindWarnings);
-    }*/
+    }
 
-    /*
     @Test
     @Transactional
     public void modifyUserSuccess() throws Exception{
         //given
         MvcResult result = mockMvc.perform(post("/user/" + extIdx)
                         .param("userName", "newUserName")
-                        .param("id", extUser.getUserId())
+                        .param("userId", extUser.getUserId())
                         .param("password", "newPassword"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -125,8 +125,8 @@ class UserControllerTest {
         Map<String, Object> models = result.getModelAndView().getModel();
 
         //then
-        assertThat(models.containsKey("user")).isTrue();
-        WebUser user = (WebUser) models.get("user");
+        assertThat(models.containsKey(WEB_USER_KEY)).isTrue();
+        WebUser user = (WebUser) models.get(WEB_USER_KEY);
         assertThat(user.getUserName()).isEqualTo("newUserName");
         assertThat(user.getPassword()).isEqualTo("newPassword");
     }
@@ -161,7 +161,6 @@ class UserControllerTest {
 
         //then
     }
-    */
 
 
     private ResultActions joinUserRequest(WebUser user) throws Exception {

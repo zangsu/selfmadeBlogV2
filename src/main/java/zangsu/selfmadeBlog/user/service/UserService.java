@@ -33,8 +33,9 @@ public class UserService {
 
     public void modify(long idx, ServiceUser user) throws NoSuchUserException, CantModifyFieldException {
         DBUser dbUser = findDbUser(idx);
-        if(!dbUser.getUserId().equals(user.getId()))
+        if(!dbUser.getUserId().equals(user.getId())) {
             throw new CantModifyFieldException("");
+        }
         dbUser.setUserName(user.getUserName());
         dbUser.setPassword(user.getPassword());
     }
