@@ -27,6 +27,9 @@
         <form th:action="@{/user/{index}(index=${index})}" th:method="delete">
             <button type="submit">삭제</button>
         </form>
+        <form th:action="@{/user/logout}" th:method="get">
+            <button type="submit">로그아웃</button>
+        </form>
     </block>
 </body>
 </html>

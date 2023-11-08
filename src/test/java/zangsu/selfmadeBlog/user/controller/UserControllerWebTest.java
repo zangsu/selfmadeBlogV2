@@ -1,9 +1,13 @@
 package zangsu.selfmadeBlog.user.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -28,8 +32,6 @@ class UserControllerWebTest {
 
     @Autowired
     UserController userController;
-
-    WebUserValidator validator = new WebUserValidator();
 
     @Test
     public void 빈값은_허용하지_않음() throws Exception{

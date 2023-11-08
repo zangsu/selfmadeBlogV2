@@ -13,9 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
-import zangsu.selfmadeBlog.model.web.WarningFactory;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 
 import java.util.Map;

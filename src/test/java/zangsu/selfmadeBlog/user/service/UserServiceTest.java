@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import zangsu.selfmadeBlog.user.exception.CantModifyFieldException;
-import zangsu.selfmadeBlog.user.exception.DuplicatedUserIdException;
-import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
+import zangsu.selfmadeBlog.exception.smbexception.CantModifyFieldException;
+import zangsu.selfmadeBlog.exception.smbexception.DuplicatedUserIdException;
+import zangsu.selfmadeBlog.exception.smbexception.NoSuchUserException;
 import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 
 import static org.assertj.core.api.Assertions.*;

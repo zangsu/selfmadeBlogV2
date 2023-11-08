@@ -3,9 +3,9 @@ package zangsu.selfmadeBlog.user.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import zangsu.selfmadeBlog.user.exception.CantModifyFieldException;
-import zangsu.selfmadeBlog.user.exception.DuplicatedUserIdException;
-import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
+import zangsu.selfmadeBlog.exception.smbexception.CantModifyFieldException;
+import zangsu.selfmadeBlog.exception.smbexception.DuplicatedUserIdException;
+import zangsu.selfmadeBlog.exception.smbexception.NoSuchUserException;
 import zangsu.selfmadeBlog.user.repository.UserDAO;
 import zangsu.selfmadeBlog.user.repository.model.DBUser;
 import zangsu.selfmadeBlog.user.service.model.ServiceUser;
@@ -20,7 +20,7 @@ public class UserService {
 
     public Long saveUser(ServiceUser user) throws DuplicatedUserIdException {
         if(userDAO.existsByUserId(user.getId()))
-            throw new DuplicatedUserIdException(new DataIntegrityViolationException(""));
+            throw new DuplicatedUserIdException();
 
         DBUser dbUser = userDAO.save(ServiceUserMapper.getDBUser(user));
         return dbUser.getIdx();
@@ -34,7 +34,7 @@ public class UserService {
     public void modify(long idx, ServiceUser user) throws NoSuchUserException, CantModifyFieldException {
         DBUser dbUser = findDbUser(idx);
         if(!dbUser.getUserId().equals(user.getId())) {
-            throw new CantModifyFieldException("");
+            throw new CantModifyFieldException();
         }
         dbUser.setUserName(user.getUserName());
         dbUser.setPassword(user.getPassword());
@@ -52,7 +52,7 @@ public class UserService {
     private DBUser findDbUser(long idx) throws NoSuchUserException {
         Optional<DBUser> dbUser = userDAO.findById(idx);
         if(dbUser.isEmpty())
-            throw new NoSuchUserException("");
+            throw new NoSuchUserException();
         return dbUser.get();
     }
 

@@ -1,5 +1,7 @@
 package zangsu.selfmadeBlog.user.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,16 +10,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import zangsu.selfmadeBlog.exception.smbexception.CantAccessException;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 import zangsu.selfmadeBlog.user.controller.model.WebUserMapper;
 import zangsu.selfmadeBlog.user.controller.validator.WebUserValidator;
-import zangsu.selfmadeBlog.user.exception.CantModifyFieldException;
-import zangsu.selfmadeBlog.user.exception.DuplicatedUserIdException;
-import zangsu.selfmadeBlog.user.exception.NoSuchUserException;
+import zangsu.selfmadeBlog.exception.smbexception.CantModifyFieldException;
+import zangsu.selfmadeBlog.exception.smbexception.DuplicatedUserIdException;
+import zangsu.selfmadeBlog.exception.smbexception.NoSuchUserException;
 import zangsu.selfmadeBlog.user.service.UserService;
 import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 
-import static zangsu.selfmadeBlog.model.web.WarningFactory.addWarnings;
 
 @Slf4j
 @Controller
@@ -27,6 +29,7 @@ public class UserController {
     final static String userViewPath = "user";
     @Autowired
     private UserService userService;
+
     //@Autowired
     private WebUserValidator validator = new WebUserValidator();
 
@@ -35,10 +38,6 @@ public class UserController {
         dataBinder.addValidators(validator);
     }
 
-    @ModelAttribute("readonly")
-    public boolean readOnly(){
-        return false;
-    }
     @ModelAttribute("webUser")
     public WebUser addUserForm(){
         return new WebUser();
@@ -52,16 +51,14 @@ public class UserController {
 
     //회원 가입 폼으로 이동
     @GetMapping("/join")
-    public String joinForm(@ModelAttribute WebUser webUser, Model model) {
-        //model.addAttribute("userClass", new WebUser());
+    public String joinForm(@ModelAttribute WebUser webUser) {
 
-        model.addAttribute("readonly", false);
         return userViewPath + "/join";
     }
 
     //회원 가입 후 회원 정보 페이지로
     @PostMapping("/join")
-    public String saveUser(@Validated @ModelAttribute WebUser user, BindingResult bindingResult, Model model) {
+    public String saveUser(@Validated @ModelAttribute WebUser user, BindingResult bindingResult, HttpServletRequest request) {
 
         if(bindingResult.hasErrors()){
             return userViewPath + "/join";
@@ -69,6 +66,8 @@ public class UserController {
 
         try {
             long savedId = userService.saveUser(WebUserMapper.getServiceUser(user));
+            HttpSession session = request.getSession();
+            session.setAttribute("userIdx", savedId);
             return "redirect:/user/" + savedId;
         } catch (DuplicatedUserIdException e) {
             bindingResult.rejectValue("userId", "Duplicate", "");
@@ -78,50 +77,74 @@ public class UserController {
 
     //회원 조회시 회원 정보 페이지로
     @GetMapping("{userIdx}")
-    public String findUser(@PathVariable long userIdx, Model model) {
+    public String findUser(@SessionAttribute(name = "userIdx", required = false) Long sessionIdx, @PathVariable long userIdx, Model model) {
+        if(sessionIdx == null || sessionIdx != userIdx){
+            new CantAccessException().addWarnings(model);
+            return "user/home";
+        }
+        return userInfo(userIdx, model);
+    }
+
+    private String userInfo(long userIdx, Model model) {
         try {
-            return userInfo(userIdx, model);
-        } catch (NoSuchUserException e) {
-            //나중에 에러 페이지를 하나 구현하기
-            addWarnings(model, e);
+            ServiceUser findUser = userService.findUser(userIdx);
+            model.addAttribute("webUser", WebUserMapper.getWebUser(findUser));
+            model.addAttribute("index", userIdx);
+            return userViewPath + "/user";
+        }catch (NoSuchUserException e){
+            e.addWarnings(model);
             return userViewPath + "/home";
         }
     }
 
-    private String userInfo(long userIdx, Model model) throws NoSuchUserException {
-
-        ServiceUser findUser = userService.findUser(userIdx);
-        model.addAttribute("webUser", WebUserMapper.getWebUser(findUser));
-        model.addAttribute("index", userIdx);
-        return userViewPath + "/user";
-    }
-
     //회원 수정 이후 회원 정보 페이지로
     @PostMapping("{userIdx}")
-    public String modifyUser(@PathVariable long userIdx,
+    public String modifyUser(@SessionAttribute(name = "userIdx", required = false) Long sessionIdx,
+                             @PathVariable long userIdx,
                              @ModelAttribute WebUser modifiedUser,
                              Model model) {
+        if(sessionIdx == null || sessionIdx != userIdx){
+            new CantAccessException().addWarnings(model);
+            return "user/home";
+        }
+
         try {
             userService.modify(userIdx, WebUserMapper.getServiceUser(modifiedUser));
             return userInfo(userIdx, model);
         } catch (NoSuchUserException e) {
-            addWarnings(model, e);
+            e.addWarnings(model);
             return userViewPath + "/home";
         } catch (CantModifyFieldException e) {
-            addWarnings(model, e);
-            return findUser(userIdx, model);
+            e.addWarnings(model);
+            return userInfo(userIdx, model);
         }
     }
 
     //회원 탈퇴 이후 탈퇴 성공 페이지로
     @DeleteMapping("{userIdx}")
-    public String deleteUser(@PathVariable int userIdx, Model model) {
+    public String deleteUser(@SessionAttribute(name = "userIdx", required = false) Long sessionIdx,
+                             @PathVariable int userIdx, Model model) {
+        if(sessionIdx == null || sessionIdx != userIdx){
+            new CantAccessException().addWarnings(model);
+            return "user/home";
+        }
+
         try {
             userService.delete(userIdx);
             return userViewPath + "/delete";
         } catch (NoSuchUserException e) {
-            addWarnings(model, e);
+            e.addWarnings(model);
             return userViewPath + "/home";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if(session != null){
+            session.invalidate();
+        }
+
+        return "user/home";
     }
 }
