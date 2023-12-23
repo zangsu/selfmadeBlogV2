@@ -12,6 +12,8 @@
             <div>
                 <label for="username">이름 : </label>
                 <input type="text" id="username" th:field="*{userName}">
+                <p th:errors="*{userName}">이름 오류</p>
+                <!--div class="field-error" th:errors="*{userName}"></div-->
             </div>
             <div>
                 <label for="userId">ID : </label>
@@ -20,6 +22,8 @@
             <div>
                 <label for="password">비밀번호 : </label>
                 <input type="password" id="password" th:field="*{password}">
+                <p th:errors="*{password}">이름 오류</p>
+                <!--div class="field-error" th:errors="*{password}"></div-->
             </div>
 
             <button type="submit">수정</button>
