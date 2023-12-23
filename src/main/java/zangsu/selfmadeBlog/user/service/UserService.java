@@ -1,5 +1,6 @@
 package zangsu.selfmadeBlog.user.service;
 
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class UserService {
         return ServiceUserMapper.getServiceUser(dbUser);
     }
 
+    @Transactional
     public void modify(long idx, ServiceUser user) throws NoSuchUserException, CantModifyFieldException {
         DBUser dbUser = findDbUser(idx);
         if(!dbUser.getUserId().equals(user.getId())) {
