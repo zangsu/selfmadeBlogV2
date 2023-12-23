@@ -26,12 +26,11 @@ import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 @RequestMapping("/user")
 public class UserController {
 
-    final static String userViewPath = "user";
     @Autowired
     private UserService userService;
 
     //@Autowired
-    private WebUserValidator validator = new WebUserValidator();
+    private final WebUserValidator validator = new WebUserValidator();
 
     @InitBinder("webUser")
     public void initValidator(DataBinder dataBinder){
@@ -46,22 +45,23 @@ public class UserController {
     //유저 홈으로 이동
     @GetMapping
     public String userHome() {
-        return userViewPath + "/home";
+        return "user/home";
     }
 
     //회원 가입 폼으로 이동
     @GetMapping("/join")
     public String joinForm(@ModelAttribute WebUser webUser) {
-
-        return userViewPath + "/join";
+        return "user/join";
     }
 
     //회원 가입 후 회원 정보 페이지로
     @PostMapping("/join")
-    public String saveUser(@Validated @ModelAttribute WebUser user, BindingResult bindingResult, HttpServletRequest request) {
+    public String saveUser(@Validated @ModelAttribute WebUser user,
+                           BindingResult bindingResult,
+                           HttpServletRequest request) {
 
         if(bindingResult.hasErrors()){
-            return userViewPath + "/join";
+            return "user/join";
         }
 
         try {
@@ -71,7 +71,7 @@ public class UserController {
             return "redirect:/user/" + savedId;
         } catch (DuplicatedUserIdException e) {
             bindingResult.rejectValue("userId", "Duplicate", "");
-            return userViewPath + "/join";
+            return "user/join";
         }
     }
 
@@ -90,19 +90,28 @@ public class UserController {
             ServiceUser findUser = userService.findUser(userIdx);
             model.addAttribute("webUser", WebUserMapper.getWebUser(findUser));
             model.addAttribute("index", userIdx);
-            return userViewPath + "/user";
+            return "user/user";
         }catch (NoSuchUserException e){
             e.addWarnings(model);
-            return userViewPath + "/home";
+            return "user/home";
         }
     }
 
     //회원 수정 이후 회원 정보 페이지로
     @PostMapping("{userIdx}")
-    public String modifyUser(@SessionAttribute(name = "userIdx", required = false) Long sessionIdx,
+    public String modifyUser(@SessionAttribute(name = "userIdx", required = false)
+                                 Long sessionIdx,
                              @PathVariable long userIdx,
-                             @ModelAttribute WebUser modifiedUser,
+                             @Validated @ModelAttribute WebUser modifiedUser,
+                             BindingResult bindingResult,
                              Model model) {
+
+        if(bindingResult.hasErrors()){
+            //TODO 에러 메시지 추가해야됨
+            bindingResult.getAllErrors()
+                    .forEach(System.out::println);
+            return "redirect:/user/" + userIdx;
+        }
         if(sessionIdx == null || sessionIdx != userIdx){
             new CantAccessException().addWarnings(model);
             return "user/home";
@@ -113,7 +122,7 @@ public class UserController {
             return userInfo(userIdx, model);
         } catch (NoSuchUserException e) {
             e.addWarnings(model);
-            return userViewPath + "/home";
+            return "user/home";
         } catch (CantModifyFieldException e) {
             e.addWarnings(model);
             return userInfo(userIdx, model);
@@ -131,10 +140,10 @@ public class UserController {
 
         try {
             userService.delete(userIdx);
-            return userViewPath + "/delete";
+            return "user/delete";
         } catch (NoSuchUserException e) {
             e.addWarnings(model);
-            return userViewPath + "/home";
+            return "user/home";
         }
     }
 

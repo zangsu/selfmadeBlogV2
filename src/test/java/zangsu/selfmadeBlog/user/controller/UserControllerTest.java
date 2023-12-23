@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
+import zangsu.selfmadeBlog.exception.SmbException;
+import zangsu.selfmadeBlog.exception.smbexception.CantModifyFieldException;
+import zangsu.selfmadeBlog.exception.smbexception.NoSuchUserException;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 
 import java.util.Map;
@@ -97,15 +100,12 @@ class UserControllerTest {
         //given
         MvcResult result = mockMvc.perform(get("/user/" + (extIdx + 1)))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute(SmbException.WarningKey, NoSuchUserException.exceptionMessage))
                 .andReturn();
 
         //when
-        ModelAndView mv = result.getModelAndView();
-        Map<String, Object> models = mv.getModel();
 
         //then
-        assertThat(models.containsKey(WarningFactory.WarningKey)).isTrue();
-        assertThat(models.get("warnings")).isEqualTo(WarningFactory.noUserFindWarnings);
     }
 
     @Test
@@ -136,14 +136,10 @@ class UserControllerTest {
         MvcResult result = mockMvc.perform(post("/user/" + extIdx)
                         .param("id", "newUserId"))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute(SmbException.WarningKey, CantModifyFieldException.exceptionMessage))
                 .andReturn();
 
         //when
-        ModelAndView mv = result.getModelAndView();
-        Map<String, Object> models = mv.getModel();
-        //then
-        assertThat(models.containsKey(WarningFactory.WarningKey)).isTrue();
-        assertThat(models.get(WarningFactory.WarningKey)).isEqualTo(WarningFactory.cantModifyWarnings);
     }
 
     @Test

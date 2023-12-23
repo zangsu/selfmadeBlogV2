@@ -38,10 +38,8 @@ public class UserService {
         if(!dbUser.getUserId().equals(user.getId())) {
             throw new CantModifyFieldException();
         }
-        System.out.println("try modify in service");
         dbUser.setUserName(user.getUserName());
         dbUser.setPassword(user.getPassword());
-        System.out.println("end modify");
     }
 
     public void delete(long idx) throws NoSuchUserException {
