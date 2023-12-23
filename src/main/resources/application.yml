@@ -2,9 +2,12 @@ spring:
   messages:
     basename: messages, errors
   datasource:
-    url: jdbc:mysql://43.200.192.75:3306/selfmadeblogV2
-    username: zangsu
-    password: selfmadedb
+    #url: jdbc:mysql://43.200.192.75:3306/selfmadeblogV2
+    #username: zangsu
+    #password: selfmadedb
+    url: jdbc:mysql://127.0.0.1:3306/selfmadeblogV2
+    username: root
+    password: 111111
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
