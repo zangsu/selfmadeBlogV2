@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{template :: insert(~{::head}, ~{::title}, ~{::block})}">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+</head>
+<body>
+<block>
+  <H2>로그인 페이지</H2>
+
+  <script th:if="${warnings} != null" th:inline="javascript">
+    alert([[${warnings.message}]]);
+  </script>
+
+  <h4 class="mb-3" th:text="|로그인: ${serviceUser.userName}|">로그인 사용자 이름</h4>
+
+</block>
+
+</body>
+</html>
