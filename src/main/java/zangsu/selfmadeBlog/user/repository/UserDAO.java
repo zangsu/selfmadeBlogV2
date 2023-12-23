@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface UserDAO extends JpaRepository<DBUser, Long> {
     //public Optional<DBUser> findByUserId(String userId);
 
+    Optional<DBUser> findDBUserByUserId(String userId);
     public boolean existsByUserId(String userId);
 }
