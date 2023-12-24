@@ -25,7 +25,7 @@ import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 @RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
-    private static final String SESSION_KEY = "loginUser";
+    private static final String SESSION_KEY = ControllerConst.SESSION_KEY;
 
     @Autowired
     private final LoginService loginService;

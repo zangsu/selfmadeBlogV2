@@ -11,6 +11,7 @@ import org.springframework.validation.DataBinder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import zangsu.selfmadeBlog.exception.smbexception.CantAccessException;
+import zangsu.selfmadeBlog.user.controller.model.UserNameDTO;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 import zangsu.selfmadeBlog.user.controller.model.WebUserMapper;
 import zangsu.selfmadeBlog.user.controller.validator.WebUserValidator;
@@ -25,6 +26,7 @@ import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private static final String SESSION_KEY = ControllerConst.SESSION_KEY;
 
     @Autowired
     private UserService userService;
@@ -50,7 +52,14 @@ public class UserController {
 
     //회원 가입 폼으로 이동
     @GetMapping("/join")
-    public String joinForm(@ModelAttribute WebUser webUser) {
+    public String joinForm(@SessionAttribute(name = SESSION_KEY, required = false) ServiceUser loginUser,
+                           @ModelAttribute UserNameDTO userNameDTO,
+                           @ModelAttribute WebUser webUser) {
+
+        if (loginUser != null) {
+            userNameDTO.setName(loginUser.getUserName());
+            return "login/loginHome";
+        }
         return "user/join";
     }
 
@@ -66,8 +75,8 @@ public class UserController {
 
         try {
             long savedId = userService.saveUser(WebUserMapper.getServiceUser(user));
-            HttpSession session = request.getSession();
-            session.setAttribute("userIdx", savedId);
+            ServiceUser savedUser = userService.findUser(savedId);
+            request.getSession().setAttribute(SESSION_KEY, savedUser);
             return "redirect:/user/" + savedId;
         } catch (DuplicatedUserIdException e) {
             bindingResult.rejectValue("userId", "Duplicate", "");
