@@ -10,4 +10,12 @@ public class CantModifyFieldException extends SmbException {
     public CantModifyFieldException() {
         super(exceptionMessage);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this){
+            return true;
+        }
+        return obj instanceof CantModifyFieldException;
+    }
 }

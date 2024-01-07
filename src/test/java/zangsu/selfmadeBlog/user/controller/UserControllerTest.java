@@ -17,9 +17,11 @@ import org.springframework.web.servlet.ModelAndView;
 import zangsu.selfmadeBlog.exception.SmbException;
 import zangsu.selfmadeBlog.exception.smbexception.CantModifyFieldException;
 import zangsu.selfmadeBlog.exception.smbexception.NoSuchUserException;
+import zangsu.selfmadeBlog.model.web.Warning;
 import zangsu.selfmadeBlog.user.controller.model.WebUser;
 
 import java.util.Map;
+import zangsu.selfmadeBlog.user.service.model.ServiceUser;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,6 +41,8 @@ class UserControllerTest {
     final static WebUser extUser =
             new WebUser("extUser", "extUserID", "extUserPassword1!");
 
+    final static ServiceUser loginUser =
+            new ServiceUser("extUser", "extUserID", "extUserPassword1!");
     @Autowired
     MockMvc mockMvc;
 
@@ -100,7 +104,8 @@ class UserControllerTest {
         //given
         MvcResult result = mockMvc.perform(get("/user/" + (extIdx + 1)))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(SmbException.WarningKey, NoSuchUserException.exceptionMessage))
+                .andExpect(model().attribute(SmbException.WarningKey,
+                        new Warning(NoSuchUserException.exceptionMessage)))
                 .andReturn();
 
         //when
@@ -115,7 +120,9 @@ class UserControllerTest {
         MvcResult result = mockMvc.perform(post("/user/" + extIdx)
                         .param("userName", "newUserName")
                         .param("userId", extUser.getUserId())
-                        .param("password", "newPassword"))
+                        .param("password", "newPassword1!")
+                        .sessionAttr(ControllerConst.SESSION_KEY, loginUser)
+                )
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -126,7 +133,7 @@ class UserControllerTest {
         assertThat(models.containsKey(WEB_USER_KEY)).isTrue();
         WebUser user = (WebUser) models.get(WEB_USER_KEY);
         assertThat(user.getUserName()).isEqualTo("newUserName");
-        assertThat(user.getPassword()).isEqualTo("newPassword");
+        assertThat(user.getPassword()).isEqualTo("newPassword1!");
     }
 
     @Test
@@ -134,9 +141,12 @@ class UserControllerTest {
     public void modifyUserFail() throws Exception{
         //given
         MvcResult result = mockMvc.perform(post("/user/" + extIdx)
-                        .param("id", "newUserId"))
+                        .param("userName", "newUserName")
+                        .param("userId","newUserId")
+                        .param("password", "newPassword1!")
+                        .sessionAttr(ControllerConst.SESSION_KEY, loginUser))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(SmbException.WarningKey, CantModifyFieldException.exceptionMessage))
+                .andExpect(model().attribute(SmbException.WarningKey, new Warning(CantModifyFieldException.exceptionMessage)))
                 .andReturn();
 
         //when

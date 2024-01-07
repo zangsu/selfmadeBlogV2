@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://43.200.192.75:3306/selfmadeblogV2_test
-    username: zangsu
-    password: selfmadedb
+    url: jdbc:mysql://localhost:3306/selfmadeblogV2
+    username: root
+    password: 111111
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

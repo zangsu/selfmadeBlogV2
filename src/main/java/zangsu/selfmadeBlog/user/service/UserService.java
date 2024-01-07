@@ -53,7 +53,7 @@ public class UserService {
 
     private DBUser findDbUser(long idx) throws NoSuchUserException {
         return userDAO.findById(idx)
-                .orElseThrow(() -> new NoSuchUserException());
+                .orElseThrow(NoSuchUserException::new);
     }
 
 

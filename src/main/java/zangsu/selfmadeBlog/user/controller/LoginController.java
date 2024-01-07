@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import zangsu.selfmadeBlog.exception.SmbException;
 import zangsu.selfmadeBlog.user.controller.model.LoginDTO;
 import zangsu.selfmadeBlog.user.controller.model.UserNameDTO;
@@ -50,6 +52,7 @@ public class LoginController {
     public String login(@ModelAttribute LoginDTO loginDTO,
                         BindingResult bindingResult,
                         @ModelAttribute(name = "userNameDTO") UserNameDTO nameDTO,
+                        @RequestParam(defaultValue = "/") String redirectURL,
                         HttpServletRequest request) {
         try {
             long loginIndex = loginService.login(loginDTO.getLonginId(), loginDTO.getPassword());
@@ -57,10 +60,22 @@ public class LoginController {
             nameDTO.setName(result.getUserName());
             HttpSession session = request.getSession();
             session.setAttribute(SESSION_KEY, result);
-            return "login/loginHome";
+            return "redirect:" + redirectURL;
         } catch (SmbException e){
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 잘못되었습니다");
             return "login/loginForm";
         }
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request,
+                         @RequestParam(defaultValue = "/login/") String redirectURL){
+        HttpSession session = request.getSession(false);
+        if(session == null){
+            //todo 세션이 null인 경우 접근 불가능??
+            throw new IllegalStateException();
+        }
+        session.invalidate();
+        return "redirect:" + redirectURL;
     }
 }
