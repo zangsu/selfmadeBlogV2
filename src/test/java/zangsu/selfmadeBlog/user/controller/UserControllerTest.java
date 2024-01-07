@@ -157,7 +157,8 @@ class UserControllerTest {
     @Transactional
     public void deleteUserSuccess() throws Exception{
         //given
-        MvcResult result = mockMvc.perform(delete("/user/" + extIdx))
+        MvcResult result = mockMvc.perform(delete("/user/" + extIdx)
+                        .sessionAttr(ControllerConst.SESSION_KEY, loginUser))
                 .andExpect(status().isOk())
                 .andReturn();
 
