@@ -93,7 +93,8 @@ class UserControllerTest {
     @Transactional
     public void findUserSuccess() throws Exception{
         //given
-        mockMvc.perform(get("/user/" + extIdx))
+        mockMvc.perform(get("/user/" + extIdx)
+                        .sessionAttr(ControllerConst.SESSION_KEY, loginUser))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute(WEB_USER_KEY, extUser));
     }
